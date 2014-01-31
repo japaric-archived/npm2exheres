@@ -1,0 +1,17 @@
+#!/usr/bin/env python3.3
+
+from npm2exheres.cli import cli
+from argparse import ArgumentParser
+
+p = ArgumentParser(description="Create exheres using npm online metadata")
+p.add_argument('-r', '--recursive', action="store_true", default=False,
+               help="create exheres for the dependencies as well")
+p.add_argument('-t', '--test', action="store_true", default=False,
+               help="uncomment test parts of the exheres")
+p.add_argument('pn', help="package name")
+p.add_argument('verspec', help="constrain package version")
+
+args = vars(p.parse_args())
+pn = args.pop('pn')
+verspec = args.pop('verspec')
+cli(pn, verspec, **args)
