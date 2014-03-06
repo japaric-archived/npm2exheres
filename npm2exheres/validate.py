@@ -1,5 +1,6 @@
 from npm2exheres.print import print_warn
 import os
+import re
 
 
 def exist_exheres(pn, pv):
@@ -110,7 +111,21 @@ def verspec_to_minmax(verspec):
     ([1, 2, 0], (2, 0, 0))
     >>> verspec_to_minmax('<1.2.3')
     (None, (1, 2, 3))
+    >>> verspec_to_minmax('~>1.2.3|~>1.3')
+    ([1, 2, 3], (2, 0, 0))
     """
+    if '|' in verspec:
+        [a, b] = verspec.split('|')
+        a = list(map(int, a.lstrip('~>').split('.')))
+        b = list(map(int, b.lstrip('~>').split('.')))
+
+        assert(a[1] + 1 == b[1])
+
+        min_v = a
+        max_v = tuple([b[0] + 1, 0, 0])
+
+        return (min_v, max_v)
+
     if '&' in verspec:
         [min_v, max_v] = verspec.split('&')
         if '~' in min_v:
