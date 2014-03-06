@@ -79,6 +79,11 @@ def verspec(npm_verspec):
     # here be wtfs
     elif re.match('^>=[0-9\.]+.x$', npm_verspec):
         return npm_verspec.replace('x', '0')
+    elif re.match('^\^[0-9]+.[0-9]+.[0-9]+$', npm_verspec):
+        tmp = npm_verspec.lstrip('^').split('.')
+        tmp2 = '.'.join([tmp[0], str(int(tmp[1]) + 1)])
+        tmp3 = '.'.join(tmp[0:3])
+        return '~>' + tmp3 + '|~>' + tmp2
     else:
         print(npm_verspec)
         assert(False)
