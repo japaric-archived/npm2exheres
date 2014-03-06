@@ -43,6 +43,10 @@ def verspec(npm_verspec):
         return ''
     elif npm_verspec == '':
         return ''
+    elif '&&' in npm_verspec:
+        return '&'.join(map(verspec, npm_verspec.split('&&')))
+    elif '||' in npm_verspec:
+        return '|'.join(map(verspec, npm_verspec.split('||')))
     elif re.match('^[~>=<]*[0-9\.x]+ ', npm_verspec):
         tmp = npm_verspec.partition(' ')
         return verspec(tmp[0]) + '&' + verspec(tmp[2])
