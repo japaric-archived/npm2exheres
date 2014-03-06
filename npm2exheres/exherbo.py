@@ -37,7 +37,7 @@ PLATFORMS="~amd64"
 
 
 def verspec(npm_verspec):
-    npm_verspec = npm_verspec.lower()
+    npm_verspec = npm_verspec.lower().strip(' ')
 
     if npm_verspec == '*':
         return ''
