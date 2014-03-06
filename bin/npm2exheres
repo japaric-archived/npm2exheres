@@ -8,6 +8,8 @@ p.add_argument('-r', '--recursive', action="store_true", default=False,
                help="create exheres for the dependencies as well")
 p.add_argument('-t', '--test', action="store_true", default=False,
                help="uncomment test parts of the exheres")
+p.add_argument('-u', '--unbundle', action="store_true", default=False,
+               help="ignore bundled dependencies")
 p.add_argument('pn', help="package name")
 p.add_argument('verspec', help="constrain package version")
 

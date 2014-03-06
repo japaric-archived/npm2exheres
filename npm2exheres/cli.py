@@ -9,8 +9,8 @@ from npm2exheres.validate import (filter_versions, exist_exheres,
 __VERSION__ = '0.1.0'
 
 
-def cli(pn, verspec=None, recursive=False, test=False, messages=[],
-        summary=True):
+def cli(pn, verspec=None, recursive=False, test=False, unbundle=False,
+        messages=[], summary=True):
     if verspec:
         print_msg('Starting {} {}'.format(pn, verspec))
     else:
@@ -37,7 +37,7 @@ def cli(pn, verspec=None, recursive=False, test=False, messages=[],
     print_msg('Got metadata')
     deps = []
     print_msg('Parsing metadata')
-    params = parse_metadata(metadata, deps, test)
+    params = parse_metadata(metadata, deps, test, unbundle)
     print_msg('Done parsing')
     print_msg('Verifying params')
     validate_params(pn, pv, params, messages)
@@ -51,7 +51,7 @@ def cli(pn, verspec=None, recursive=False, test=False, messages=[],
         n = len(deps)
         for (pn, verspec) in deps:
             print_msg('{}-{}: recursing {} deps'.format(pn, pv, n))
-            cli(pn, verspec, recursive, test, messages, False)
+            cli(pn, verspec, recursive, test, unbundle, messages, False)
             n -= 1
 
     if verspec:

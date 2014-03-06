@@ -2,7 +2,7 @@ from npm2exheres.exherbo import verspec
 import os.path
 
 
-def get_deps(metadata, fields, target, deps_acc, comment=False):
+def get_deps(metadata, fields, target, deps_acc, unbundle, comment=False):
     if comment:
         template = '\n#NPM_' + target + '_DEPS=(\n    #{}\n#)\n'
         glue = '\n    #'
@@ -15,10 +15,10 @@ def get_deps(metadata, fields, target, deps_acc, comment=False):
         if field in metadata and metadata[field]:
             deps = metadata[field]
             dnames = sorted(deps.keys())
-            if 'bundledDependencies' in metadata:
+            if not unbundle and 'bundledDependencies' in metadata:
                 dnames = filter(
                     lambda x: x not in metadata['bundledDependencies'], dnames)
-            if 'bundleDependencies' in metadata:
+            if not unbundle and 'bundleDependencies' in metadata:
                 dnames = filter(
                     lambda x: x not in metadata['bundleDependencies'], dnames)
             dpairs += list(map(lambda x: (x, verspec(deps[x])), dnames))
@@ -121,7 +121,17 @@ def get_summary(metadata):
         return ''
 
 
-def parse_metadata(metadata, deps_acc=[], test=False):
+def get_unbundle(metadata):
+    if 'bundledDependencies' in metadata:
+        deps = metadata['bundledDependencies']
+    elif 'bundleDependencies' in metadata:
+        deps = metadata['bundleDependencies']
+    else:
+        return ''
+
+    return '\nNPM_UNBUNDLE=(\n    {}\n)\n'.format('\n    '.join(deps))
+
+def parse_metadata(metadata, deps_acc=[], test=False, unbundle=False):
     params = {}
 
     params['exparams'] = get_exparams(metadata)
@@ -129,14 +139,16 @@ def parse_metadata(metadata, deps_acc=[], test=False):
     params['licenses'] = get_licenses(metadata)
     params['npm_bins'] = get_npm_bins(metadata)
     params['run_deps'] = get_deps(
-        metadata, ['dependencies', 'optionalDependencies'], 'RUN', deps_acc)
+        metadata, ['dependencies', 'optionalDependencies'], 'RUN', deps_acc,
+        unbundle)
     params['src_test'] = get_src_test(metadata, not test)
     params['summary'] = get_summary(metadata)
     if test:
         params['test_deps'] = get_deps(
-            metadata, ['devDependencies'], 'TEST', deps_acc, not test)
+            metadata, ['devDependencies'], 'TEST', deps_acc, unbundle, not test)
     else:
         params['test_deps'] = get_deps(
-            metadata, ['devDependencies'], 'TEST', [], not test)
+            metadata, ['devDependencies'], 'TEST', [], unbundle, not test)
+    params['npm_unbundle'] = get_unbundle(metadata) if unbundle else ''
 
     return params
