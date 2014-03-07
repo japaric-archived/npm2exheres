@@ -7,5 +7,5 @@ setup(
     name='npm2exehres',
     packages=['npm2exheres'],
     scripts=['bin/npm2exheres'],
-    version='0.1.0'
+    version='0.2.0'
 )
